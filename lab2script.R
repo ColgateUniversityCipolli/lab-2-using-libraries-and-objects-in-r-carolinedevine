@@ -9,9 +9,9 @@
 ################################################################################
 
 # Step 0
-install.packages("stringr")
+#install.packages("stringr")
 library("stringr")
-help("stringr")
+#help("stringr")
 
 ### Step 1 ###
 # list all of the directories in Music
@@ -23,18 +23,18 @@ all.directories <- list.dirs("Music", recursive = TRUE)
 num.of.forwardslashes <- str_count(all.directories, "/")
 
 # used count to subset all album 
-  album.directories <- all.directories[num.of.forwardslashes == 2 ]
+album.directories <- all.directories[num.of.forwardslashes == 2 ]
 
 ### Step 3 ###
 # empty vector 
 code.to.process <- c()
-output.file <- c()
+
 #first for loop here
 for (i in 1:length(album.directories)){
   # album 
   curr.album <- album.directories[i]
   # get all files from first album
-  all.files <- list.files(curr.album, recursive = TRUE)
+  all.files <- list.files(curr.album, recursive=TRUE)
   # count the number of files in the test album that are wav.
   num.wav.files <- str_count(all.files, ".wav")
   # make a subset of all of the .wav files
@@ -60,10 +60,9 @@ for (i in 1:length(album.directories)){
         
     # [artist name]-[album name]-[track name].json
     desired.output.file <- paste(artist.name,"-",album.name,"-",only.track.name, ".json", sep = "")
-    output.file <- c(output.file, desired.output.file)
-    
+
     # command line (2.3.3.d)
-    command.line <- paste("streaming_extractor_music.exe", " ", '"', curr.track,'"', " ",'"', desired.output.file,'"', sep = "")
+    command.line <- paste("streaming_extractor_music.exe", " ", '"', curr.track,'"', " ", '"', desired.output.file,'"', sep = "")
     code.to.process <- c(code.to.process, command.line)
     
     # end second for loop here 
@@ -72,8 +71,8 @@ for (i in 1:length(album.directories)){
 
 ### Step 4 ###
 writeLines(code.to.process, "batfile.txt")
-code.to.process. # for checking 
-output.file  # for checking 
+code.to.process # for checking 
+
 
 
 ################################################################################
@@ -88,22 +87,28 @@ help("jsonlite")
 
 # Step 1
 
-# storage of file names
-file.name.storage <- c()
+# list of .json files
+json.file.names <- list.files(,pattern = "\\.json$")
 json.storage <- c()
 
-# start for loop here 
-for (i in 1:length(output.file)) {
-  file <- output.file[i]
-  file.parts <- str_split(file, "-", simplify = TRUE)
+# for loop for if there is more than one json file in repository 
+for (i in 1:length(json.file.names)) {
+  file <- json.file.names[1]
+  file.minusjson <- str_sub(file, start = 1, end = str_length(file)-5)
+  file.parts <- str_split(file.minusjson, "-", simplify = TRUE)
   artist.file <- file.parts[1]
   album.file <- file.parts[2]
   track.file <- file.parts[3]
   
-  json.storage[[i]] <- fromJSON(file)
+  json.storage <- fromJSON(file) # do i need to save json.storage for each loop like this
+  
+  average.loudness <- json.storage$lowlevel$average_loudness
+  mean.spectral.energy <- json.storage$lowlevel$spectral_energy$mean
+  danceability <- json.storage$rhythm$danceability
+  bpm <- json.storage$rhythm$bpm
+  key.key <- json.storage$tonal$key_key
+  key.scale <- json.storage$tonal$key_scale
+  length <- json.storage$metadata$audio_properties$length
   
 }
-# end for loop here 
-json.storage
-  
 
